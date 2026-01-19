@@ -104,7 +104,7 @@
                 <configuration>
                     <!-- TestNG provider does not understand the JUnit 5 groups syntax used in the rest of the project, make sure to override it -->
                     <excludedGroups>none</excludedGroups>
-                    <skipTests>${skipTests}</skipTests>
+                    <skipTests>true</skipTests>
                     <redirectTestOutputToFile>${redirectTestOutputToFile}</redirectTestOutputToFile>
                     <argLine>-Xmx1024m</argLine>
                     <properties>

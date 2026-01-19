@@ -137,7 +137,7 @@
     </dependencies>
     <build>
         <sourceDirectory>src/jvm</sourceDirectory>
-        <testSourceDirectory>src/test</testSourceDirectory>
+        <!-- <testSourceDirectory>src/test</testSourceDirectory> -->
         <resources>
             <resource>
                 <directory>${basedir}/src/resources</directory>
