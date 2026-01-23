@@ -390,7 +390,6 @@
         </profile>
 
         <!-- Profilo Randoop  -->
-
         <profile>
             <id>randoop</id>
             <build>
@@ -399,25 +398,6 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-dependency-plugin</artifactId>
                         <executions>
-                            <execution>
-                                <id>download-randoop</id>
-                                <phase>generate-test-resources</phase>
-                                <goals>
-                                    <goal>copy</goal>
-                                </goals>
-                                <configuration>
-                                    <artifactItems>
-                                        <artifactItem>
-                                            <groupId>com.github.randoop</groupId>
-                                            <artifactId>randoop</artifactId>
-                                            <version>4.3.2</version>
-                                            <classifier>all</classifier>
-                                            <outputDirectory>${project.build.directory}/randoop</outputDirectory>
-                                            <destFileName>randoop.jar</destFileName>
-                                        </artifactItem>
-                                    </artifactItems>
-                                </configuration>
-                            </execution>
                             <execution>
                                 <id>copy-deps</id>
                                 <phase>generate-test-resources</phase>
@@ -462,17 +442,9 @@
                     </plugin>
                 </plugins>
             </build>
-
-            <repositories>
-                <repository>
-                    <id>jitpack.io</id>
-                    <url>https://jitpack.io</url>
-                </repository>
-            </repositories>
         </profile>
 
         <!-- Profilo EvoSuite -->
-
         <profile>
             <id>evosuite</id>
             <build>

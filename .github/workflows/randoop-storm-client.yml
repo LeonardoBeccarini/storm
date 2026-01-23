@@ -1,4 +1,4 @@
-name: Randoop (storm-client)
+name: Randoop Tests
 
 on:
   workflow_dispatch:
@@ -19,10 +19,17 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      - name: Build and run Randoop
+      - name: Build project
+        run: mvn install -DskipTests -q
+
+      - name: Download Randoop
         run: |
-          mvn install -DskipTests -q
-          mvn -pl storm-client test -Prandoop -DskipTests
+          mkdir -p storm-client/target/randoop
+          curl -L -o storm-client/target/randoop/randoop.jar \
+            https://github.com/randoop/randoop/releases/download/v4.3.2/randoop-all-4.3.2.jar
+
+      - name: Run Randoop
+        run: mvn -pl storm-client test -Prandoop -DskipTests
 
       - name: Upload generated tests
         uses: actions/upload-artifact@v4
