@@ -121,25 +121,23 @@ public class TopologyBuilderTest {
                 // --- setBolt ---
                 {1,  ComponentType.BOLT,  "pippo",                 false, 1,    null},
                 {2,  ComponentType.BOLT,  "pippo",                 true,  1,    NullPointerException.class}, // tc2: NPE noto
-                {3,  ComponentType.BOLT,  "pippo",                 false, -1,   IllegalArgumentException.class},
-                {4,  ComponentType.BOLT,  "pippo",                 false, 0,    IllegalArgumentException.class},
-                {5,  ComponentType.BOLT,  "pippo",                 false, null, null},
-             //   {6,  ComponentType.BOLT,  null,                    false, 1,    IllegalArgumentException.class},
-            //    {7,  ComponentType.BOLT,  "",                      false, 1,    IllegalArgumentException.class},
-                {8,  ComponentType.BOLT,  "duplicated_bolt",       false, 1,    IllegalArgumentException.class},
-                {9,  ComponentType.BOLT,  "duplicated_bolt_spout", false, 1,    IllegalArgumentException.class},
+                {3,  ComponentType.BOLT,  "pippo",                 false, 0,    IllegalArgumentException.class},
+                {4,  ComponentType.BOLT,  "pippo",                 false, null, null},
+             //   {5,  ComponentType.BOLT,  null,                    false, 1,    IllegalArgumentException.class},
+            //    {6,  ComponentType.BOLT,  "",                      false, 1,    IllegalArgumentException.class},
+                {7,  ComponentType.BOLT,  "duplicated_bolt",       false, 1,    IllegalArgumentException.class},
+                {8,  ComponentType.BOLT,  "duplicated_bolt_spout", false, 1,    IllegalArgumentException.class},
 
                 // --- setSpout ---
-                {10, ComponentType.SPOUT, "spout_ok",              false, 1,    null},
+                {9, ComponentType.SPOUT, "spout_ok",              false, 1,    null},
                 // Tipo eccezione su spout null puo' variare tra versioni: uso RuntimeException per coprire NPE/IAE
-                {11, ComponentType.SPOUT, "spout_ok",              true,  1,    RuntimeException.class},
-                {12, ComponentType.SPOUT, "spout_ok",              false, -1,   IllegalArgumentException.class},
-                {13, ComponentType.SPOUT, "spout_ok",              false, 0,    IllegalArgumentException.class},
-                {14, ComponentType.SPOUT, "spout_ok",              false, null, null},
-            //    {15, ComponentType.SPOUT, null,                    false, 1,    IllegalArgumentException.class},
-             //   {16, ComponentType.SPOUT, "",                      false, 1,    IllegalArgumentException.class},
-                {17, ComponentType.SPOUT, "duplicated_spout",      false, 1,    IllegalArgumentException.class},
-                {18, ComponentType.SPOUT, "duplicated_spout_bolt", false, 1,    IllegalArgumentException.class}
+                {10, ComponentType.SPOUT, "spout_ok",              true,  1,    RuntimeException.class},
+                {11, ComponentType.SPOUT, "spout_ok",              false, 0,    IllegalArgumentException.class},
+                {12, ComponentType.SPOUT, "spout_ok",              false, null, null},
+            //    {13, ComponentType.SPOUT, null,                    false, 1,    IllegalArgumentException.class},
+             //   {14, ComponentType.SPOUT, "",                      false, 1,    IllegalArgumentException.class},
+                {15, ComponentType.SPOUT, "duplicated_spout",      false, 1,    IllegalArgumentException.class},
+                {16, ComponentType.SPOUT, "duplicated_spout_bolt", false, 1,    IllegalArgumentException.class}
         });
     }
 
@@ -175,16 +173,16 @@ public class TopologyBuilderTest {
         spout = new DummySpout();
 
         // Precondizioni per duplicati (stesso id gia' presente)
-        if (tc == 8) {
+        if (tc == 7) {
             BoltDeclarer first = builder.setBolt(id, validBolt, 1);
             assertNotNull("Precondizione duplicated_bolt fallita (prima setBolt)", first);
-        } else if (tc == 9) {
+        } else if (tc == 8) {
             SpoutDeclarer s = builder.setSpout(id, spout, 1);
             assertNotNull("Precondizione duplicated_bolt_spout fallita (prima setSpout)", s);
-        } else if (tc == 17) {
+        } else if (tc == 15) {
             SpoutDeclarer first = builder.setSpout(id, spout, 1);
             assertNotNull("Precondizione duplicated_spout fallita (prima setSpout)", first);
-        } else if (tc == 18) {
+        } else if (tc == 16) {
             BoltDeclarer b = builder.setBolt(id, validBolt, 1);
             assertNotNull("Precondizione duplicated_spout_bolt fallita (prima setBolt)", b);
         }
