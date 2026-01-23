@@ -388,5 +388,87 @@
                 </plugins>
             </build>
         </profile>
+
+        <!-- Profilo Randoop  -->
+
+        <profile>
+            <id>randoop</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>download-randoop</id>
+                                <phase>generate-test-resources</phase>
+                                <goals>
+                                    <goal>copy</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>com.github.randoop</groupId>
+                                            <artifactId>randoop</artifactId>
+                                            <version>4.3.2</version>
+                                            <classifier>all</classifier>
+                                            <outputDirectory>${project.build.directory}/randoop</outputDirectory>
+                                            <destFileName>randoop.jar</destFileName>
+                                        </artifactItem>
+                                    </artifactItems>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>copy-deps</id>
+                                <phase>generate-test-resources</phase>
+                                <goals>
+                                    <goal>copy-dependencies</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.directory}/dependency</outputDirectory>
+                                    <includeScope>runtime</includeScope>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>run-randoop</id>
+                                <phase>test</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>java</executable>
+                                    <arguments>
+                                        <argument>-Xmx2g</argument>
+                                        <argument>-classpath</argument>
+                                        <argument>${project.build.directory}/randoop/randoop.jar:${project.build.outputDirectory}:${project.build.directory}/dependency/*</argument>
+                                        <argument>randoop.main.Main</argument>
+                                        <argument>gentests</argument>
+                                        <argument>--testclass=org.apache.storm.utils.ObjectReader</argument>
+                                        <argument>--testclass=org.apache.storm.topology.TopologyBuilder</argument>
+                                        <argument>--time-limit=60</argument>
+                                        <argument>--output-limit=200</argument>
+                                        <argument>--junit-output-dir=${project.build.directory}/randoop-tests</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+
+            <repositories>
+                <repository>
+                    <id>jitpack.io</id>
+                    <url>https://jitpack.io</url>
+                </repository>
+            </repositories>
+        </profile>
     </profiles>
 </project>
