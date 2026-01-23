@@ -25,7 +25,7 @@ jobs:
         run: mvn install -DskipTests -pl storm-shaded-deps,storm-client -am
 
       - name: Run tests with JaCoCo
-        run: mvn verify -pl storm-client -Dtest=ObjectReaderTest,TopologyBuilderTest
+        run: mvn verify -pl storm-client -Dtest="myTests.*Test"
 
       - name: Upload JaCoCo report
         uses: actions/upload-artifact@v4
@@ -45,4 +45,3 @@ jobs:
           skip_check_run: false
           minimum_coverage: 0
           fail_below_threshold: false
-
