@@ -13,79 +13,83 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Use Java 11 - supported by EvoSuite 1.2.0
-      - name: Set up JDK 11
+      # STEP 1: Build with Java 17 (required by Storm)
+      - name: Set up JDK 17 for building
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Build Storm project
+        run: |
+          mvn install -DskipTests -q -P!unix_py_tests
+
+      - name: Copy dependencies
+        run: |
+          cd storm-client
+          mvn dependency:copy-dependencies -DoutputDirectory=target/dependency -q
+
+      # STEP 2: Build EvoSuite with Java 11
+      - name: Set up JDK 11 for EvoSuite
         uses: actions/setup-java@v4
         with:
           java-version: '11'
           distribution: 'temurin'
-          cache: 'maven'
 
-      # Build the entire project with Java 11
-      - name: Build storm-client and dependencies
-        run: |
-          mvn install -DskipTests -q -P!unix_py_tests
-
-      # Build EvoSuite 1.2.0 from source (supports Java 9+)
       - name: Build EvoSuite 1.2.0
         run: |
           git clone --depth 1 --branch v1.2.0 https://github.com/EvoSuite/evosuite.git evosuite-src
           cd evosuite-src
-          mvn package -DskipTests -q -T 2C
+          mvn package -DskipTests -q -T 2C -pl master,standalone_runtime -am
           mkdir -p ../evosuite-jars
           cp master/target/evosuite-master-1.2.0.jar ../evosuite-jars/evosuite.jar
           cp standalone_runtime/target/evosuite-standalone-runtime-1.2.0.jar ../evosuite-jars/
 
-      # Copy dependencies for EvoSuite classpath
+      # Build classpath
       - name: Prepare classpath
+        id: classpath
         run: |
           cd storm-client
-          mvn dependency:copy-dependencies -DoutputDirectory=target/dependency -DincludeScope=runtime -q
+          CP="target/classes"
+          for jar in target/dependency/*.jar; do
+            [ -f "$jar" ] && CP="$CP:$jar"
+          done
+          echo "cp=$CP" >> $GITHUB_OUTPUT
 
-      # Run EvoSuite on ObjectReader
-      - name: Generate tests for ObjectReader
+      # Run EvoSuite (uses Java 11)
+      - name: EvoSuite - ObjectReader
         run: |
           cd storm-client
           java -jar ../evosuite-jars/evosuite.jar \
             -class org.apache.storm.utils.ObjectReader \
-            -projectCP target/classes:target/dependency/* \
+            -projectCP "${{ steps.classpath.outputs.cp }}" \
             -Dsearch_budget=120 \
             -Dminimize=true \
             -Dassertion_strategy=all \
             -Djunit_check=false
+        timeout-minutes: 5
         continue-on-error: true
 
-      # Run EvoSuite on TopologyBuilder
-      - name: Generate tests for TopologyBuilder
+      - name: EvoSuite - TopologyBuilder
         run: |
           cd storm-client
           java -jar ../evosuite-jars/evosuite.jar \
             -class org.apache.storm.topology.TopologyBuilder \
-            -projectCP target/classes:target/dependency/* \
+            -projectCP "${{ steps.classpath.outputs.cp }}" \
             -Dsearch_budget=120 \
             -Dminimize=true \
             -Dassertion_strategy=all \
             -Djunit_check=false
+        timeout-minutes: 5
         continue-on-error: true
 
-      # Compile generated tests to verify they work
-      - name: Compile generated tests
+      - name: List generated tests
         run: |
-          cd storm-client
-          if [ -d "evosuite-tests" ]; then
-            # Copy runtime jar
-            cp ../evosuite-jars/evosuite-standalone-runtime-1.2.0.jar target/dependency/
-          
-            # Find and compile test files
-            find evosuite-tests -name "*.java" -print0 | xargs -0 javac \
-              -cp "target/classes:target/dependency/*:../evosuite-jars/evosuite-standalone-runtime-1.2.0.jar" \
-              -d evosuite-tests \
-              2>&1 || echo "Some tests may have compilation issues"
-          fi
-        continue-on-error: true
+          echo "=== Generated tests ==="
+          find storm-client/evosuite-tests -name "*.java" 2>/dev/null || echo "No tests found"
 
-      # Upload generated tests
-      - name: Upload generated tests
+      - name: Upload EvoSuite tests
         uses: actions/upload-artifact@v4
         with:
           name: evosuite-tests
