@@ -13,16 +13,26 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-java@v4
+      # Build with Java 17 first
+      - name: Set up JDK 17 for building
+        uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
           cache: 'maven'
 
-      - name: Build and run EvoSuite
-        run: |
-          mvn install -DskipTests -q
-          mvn -pl storm-client test -Pevosuite -DskipTests
+      - name: Build project (skip tests)
+        run: mvn -pl storm-client -am install -DskipTests -q
+
+      # Switch to Java 8 for EvoSuite (required - EvoSuite needs tools.jar)
+      - name: Set up JDK 8 for EvoSuite
+        uses: actions/setup-java@v4
+        with:
+          java-version: '8'
+          distribution: 'temurin'
+
+      - name: Run EvoSuite
+        run: mvn -pl storm-client test -Pevosuite -DskipTests
 
       - name: Upload generated tests
         uses: actions/upload-artifact@v4
