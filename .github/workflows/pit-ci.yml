@@ -1,0 +1,37 @@
+name: PIT mutation tests
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "storm-client/**"
+      - ".github/workflows/pit-storm-client.yml"
+  pull_request:
+    paths:
+      - "storm-client/**"
+      - ".github/workflows/pit-storm-client.yml"
+
+jobs:
+  pit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+
+      - name: Run PIT (storm-client)
+        run: |
+          mvn -B -pl storm-client -am -Ppit -DskipTests test-compile org.pitest:pitest-maven:mutationCoverage
+
+      - name: Upload PIT report
+        uses: actions/upload-artifact@v4
+        with:
+          name: pit-report-storm-client
+          path: storm-client/target/pit-reports/**
+

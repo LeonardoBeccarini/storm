@@ -388,7 +388,6 @@
                 </plugins>
             </build>
         </profile>
-
         <!-- Profilo Randoop  -->
         <profile>
             <id>randoop</id>
@@ -443,5 +442,45 @@
                 </plugins>
             </build>
         </profile>
+        <!-- Profilo pit  -->
+        <profile>
+            <id>pit</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.pitest</groupId>
+                        <artifactId>pitest-maven</artifactId>
+                        <version>1.17.0</version>
+                        <configuration>
+                            <!-- Classi da mutare-->
+                            <targetClasses>
+                                <param>org.apache.storm.utils.ObjectReader*</param>
+                                <param>org.apache.storm.topology.TopologyBuilder*</param>
+                            </targetClasses>
+
+                            <!-- Test da eseguire -->
+                            <targetTests>
+                                <param>myTests.*</param>
+                            </targetTests>
+
+                            <outputFormats>
+                                <param>HTML</param>
+                            </outputFormats>
+                        </configuration>
+                    </plugin>
+
+                    <!-- evita che Maven esegua tutta la test suite
+                         quando PIT viene lanciato (PIT lancerà comunque i test selezionati). -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <skipTests>true</skipTests>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
     </profiles>
 </project>
