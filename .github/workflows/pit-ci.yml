@@ -25,9 +25,13 @@ jobs:
           java-version: "17"
           cache: maven
 
+      - name: Build project (skip tests)
+        run: mvn clean install -DskipTests -pl storm-client -am
+
       - name: Run PIT (storm-client)
         run: |
-          mvn -B -pl storm-client -am -Ppit -DskipTests test-compile org.pitest:pitest-maven:mutationCoverage
+          cd storm-client
+          mvn org.pitest:pitest-maven:1.17.0:mutationCoverage -Pmutation-testing
 
       - name: Upload PIT report
         uses: actions/upload-artifact@v4
