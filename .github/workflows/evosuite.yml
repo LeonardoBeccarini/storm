@@ -21,7 +21,7 @@ jobs:
 
       - name: Build and run EvoSuite
         run: |
-          mvn -pl storm-client -am install -DskipTests -q
+          mvn install -DskipTests -q
           mvn -pl storm-client test -Pevosuite -DskipTests
 
       - name: Upload generated tests
