@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Build with Java 17 first
+      # Build with Java 17
       - name: Set up JDK 17 for building
         uses: actions/setup-java@v4
         with:
@@ -24,15 +24,21 @@ jobs:
       - name: Build project (skip tests)
         run: mvn -pl storm-client -am install -DskipTests -q
 
-      # Switch to Java 8 for EvoSuite (required - EvoSuite needs tools.jar)
+      # Switch to Java 8 for EvoSuite
       - name: Set up JDK 8 for EvoSuite
         uses: actions/setup-java@v4
         with:
           java-version: '8'
           distribution: 'temurin'
 
+      # Run EvoSuite - disable unix_py_tests profile to avoid storm-maven-plugins conflict
       - name: Run EvoSuite
-        run: mvn -pl storm-client test -Pevosuite -DskipTests
+        run: |
+          mvn -pl storm-client test \
+            -Pevosuite \
+            -P!unix_py_tests \
+            -DskipTests \
+            -Dmaven.main.skip=true
 
       - name: Upload generated tests
         uses: actions/upload-artifact@v4
