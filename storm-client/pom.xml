@@ -466,6 +466,12 @@
                             <outputFormats>
                                 <param>HTML</param>
                             </outputFormats>
+
+                            <!-- Risolve il problema di argLine -->
+                            <jvmArgs>
+                                <jvmArg>-Xmx3g</jvmArg>
+                            </jvmArgs>
+
                         </configuration>
                     </plugin>
 
