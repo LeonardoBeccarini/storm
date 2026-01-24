@@ -467,21 +467,20 @@
                                 <param>HTML</param>
                             </outputFormats>
 
-                            <!-- Risolve il problema di argLine -->
+                            <!-- Sovrascrivo argLine per evitare @{argLine} -->
                             <jvmArgs>
                                 <jvmArg>-Xmx3g</jvmArg>
                             </jvmArgs>
-
                         </configuration>
                     </plugin>
 
-                    <!-- evita che Maven esegua tutta la test suite
-                         quando PIT viene lanciato (PIT lancerà comunque i test selezionati). -->
+                    <!-- Sovrascrivo surefire per rimuovere argLine problematico -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
                             <skipTests>true</skipTests>
+                            <argLine>-Xmx3g</argLine>
                         </configuration>
                     </plugin>
                 </plugins>
