@@ -31,11 +31,10 @@ jobs:
       - name: Run PIT (storm-client)
         run: |
           cd storm-client
-          mvn org.pitest:pitest-maven:1.17.0:mutationCoverage -Pmutation-testing
+          mvn org.pitest:pitest-maven:1.17.0:mutationCoverage -Ppit
 
       - name: Upload PIT report
         uses: actions/upload-artifact@v4
         with:
           name: pit-report-storm-client
           path: storm-client/target/pit-reports/**
-
