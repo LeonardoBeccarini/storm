@@ -80,7 +80,7 @@ public class ObjectReaderTest {
             if (expectedException == null) {
                 throw t;
             }
-            // Eccezione attesa: controllo tipo esatto come nel tuo esempio
+            // Eccezione attesa: controllo tipo esatto
             assertEquals(expectedException, t.getClass());
         }
     }
