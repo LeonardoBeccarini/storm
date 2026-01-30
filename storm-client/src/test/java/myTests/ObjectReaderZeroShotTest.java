@@ -492,17 +492,16 @@ public class ObjectReaderZeroShotTest {
         assertEquals("  whitespace  ", ObjectReader.getString("  whitespace  "));
     }
 
-    @Test
-    public void testGetIntWithWhitespaceStringMayFail() {
-        // Testing if whitespace-padded number strings are handled
-        try {
-            Integer result = ObjectReader.getInt("  42  ");
-            // If it succeeds, verify the value
-            assertEquals(Integer.valueOf(42), result);
-        } catch (IllegalArgumentException e) {
-            // This is also acceptable behavior - trimming may not be supported
-            assertTrue(true);
-        }
+    //Sostituisc il test "testGetIntWithWhitespaceStringMayFail" con uno deterministico, aspettandomi un'eccezione
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetIntWithWhitespaceStringThrowsException() {
+        ObjectReader.getInt("  47  ");
+    }
+
+    // stesso principio per long
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetLongWithWhitespaceStringThrowsException() {
+        ObjectReader.getLong("  47  ");
     }
 
     @Test
